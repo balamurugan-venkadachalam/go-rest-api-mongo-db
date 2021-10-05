@@ -8,10 +8,10 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
 	"github.com/labstack/gommon/random"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 )
 
 const (
@@ -54,10 +54,10 @@ func addCorrelationID(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-
 func main() {
 	fmt.Println("test")
 	e := echo.New()
+	e.Logger.SetLevel(log.ERROR)
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Pre(addCorrelationID)
 	h := handlers.ProductHandler{Col: col}

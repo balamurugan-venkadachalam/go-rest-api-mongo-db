@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -59,5 +60,20 @@ func TestProduct(t *testing.T) {
 		c := e.NewContext(req, res)
 		h.Col = col
 		assert.Nil(t, h.CreateProducts(c))
+		assert.Equal(t, http.StatusCreated, res.Code)
+	})
+
+	t.Run("get product", func(t *testing.T) {
+		req := httptest.NewRequest("get", "/products", nil)
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		res := httptest.NewRecorder()
+		e := echo.New()
+		c := e.NewContext(req, res)
+		c.SetParamNames("id")
+		c.SetParamValues("615915766aab9e4f3bb138eb")
+		h.Col = col
+		err := h.GetProduct(c)
+		assert.Nil(t, err)
+		assert.Equal(t, http.StatusOK, res.Code)
 	})
 }
