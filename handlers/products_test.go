@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 	"example.com/m/v2/config"
 	"fmt"
 	"github.com/ilyakaznacheev/cleanenv"
@@ -9,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -75,5 +77,16 @@ func TestProduct(t *testing.T) {
 		err := h.GetProduct(c)
 		assert.Nil(t, err)
 		assert.Equal(t, http.StatusOK, res.Code)
+		body, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var expectedResponse Product
+		err = json.Unmarshal(body, &expectedResponse)
+		if err != nil {
+			t.Fatal(err)
+		}
+		assert.Equal(t, "Pen", expectedResponse.Name)
 	})
+
 }
