@@ -157,7 +157,7 @@ func updateProduct(ctx context.Context, param string, p Product, collection dbif
 	}
 	res := collection.FindOne(ctx, bson.M{"_id": docID})
 	err = res.Decode(&product)
-	if err != nil {
+	if err != nil && err != mongo.ErrNoDocuments {
 		return product, err
 	}
 	product.Price = p.Price

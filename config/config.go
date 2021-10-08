@@ -10,6 +10,7 @@ type AppConfig struct {
 	DBPort         string `env:"DB_PORT" env-default:"27017"`
 	DBName         string `env:"DB_NAME" env-default:"sample_product"`
 	CollectionName string `env:"COLLECTION_NAME" env-default:"products"`
+	UserCollection string `env:"USER_COL_NAME" env-default:"users"`
 }
 
 var cfg AppConfig
