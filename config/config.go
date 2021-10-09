@@ -11,6 +11,7 @@ type AppConfig struct {
 	DBName         string `env:"DB_NAME" env-default:"sample_product"`
 	CollectionName string `env:"COLLECTION_NAME" env-default:"products"`
 	UserCollection string `env:"USER_COL_NAME" env-default:"users"`
+	JwtTokenSecret string `env:"JWT_TOKEN_SECRET" env-default:"token"`
 }
 
 var cfg AppConfig

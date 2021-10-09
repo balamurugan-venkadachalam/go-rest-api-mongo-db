@@ -73,16 +73,22 @@ func main() {
 	e := echo.New()
 	e.Logger.SetLevel(log.ERROR)
 	e.Pre(middleware.RemoveTrailingSlash())
+	jwtMiddleware := middleware.JWTWithConfig(middleware.JWTConfig{
+		SigningKey:  []byte(cfg.JwtTokenSecret),
+		TokenLookup: "header:x-auth-token",
+	})
+	//e.Pre(jwtMiddleware)
+
 	e.Pre(addCorrelationID)
 	h := &handlers.ProductHandler{Col: pCol}
 	userHandler := &handlers.UserHandler{Col: userCol}
-	e.POST("/products", h.CreateProducts, middleware.BodyLimit("1M"))
-	e.DELETE("/products/:id", h.DeleteProduct)
-	e.GET("/products/:id", h.GetProduct)
-	e.GET("/products", h.GetProducts)
-	e.PUT("/products/:id", h.PutProduct)
+	e.POST("/products", h.CreateProducts, middleware.BodyLimit("1M"), jwtMiddleware)
+	e.DELETE("/products/:id", h.DeleteProduct, jwtMiddleware)
+	e.GET("/products/:id", h.GetProduct, jwtMiddleware)
+	e.GET("/products", h.GetProducts, jwtMiddleware)
+	e.PUT("/products/:id", h.PutProduct, jwtMiddleware)
 	e.POST("/user", userHandler.CreateUser, middleware.BodyLimit("1M"))
-
+	e.POST("/auth", userHandler.AuthUser)
 	server := fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
 	fmt.Println(server)
 	e.Logger.Fatal(e.Start(server))
